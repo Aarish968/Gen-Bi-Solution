@@ -80,3 +80,5 @@ seed_data.py
 roadmap.md
 tests
 data/
+%LOCALAPPDATA%
+frontned/%LOCALAPPDATA%
