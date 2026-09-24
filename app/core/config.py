@@ -4,6 +4,9 @@ class Settings(BaseSettings):
     GOOGLE_API_KEY: str
     GEMINI_MODEL: str = "gemini-3.5-flash"
 
+    # Redis
+    REDIS_URL: str = "redis://localhost:6379/0"
+
     # Database fields
     DB_HOST: str = "localhost"
     DB_PORT: int = 5432

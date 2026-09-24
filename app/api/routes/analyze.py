@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 from pydantic import BaseModel
-from app.agents.orchestrator_agent import OrchestratorAgent
+from app.tasks.analyze_task import analyze_question_task
 
 router = APIRouter()
 
@@ -12,14 +12,19 @@ class AnalyzeRequest(BaseModel):
 @router.post("/")
 async def analyze(request: AnalyzeRequest):
     """
-    Single entry point for the full multi-agent pipeline.
+    Submits analyze question as a background Celery task.
 
-    Internally runs:
-        PlannerAgent → QueryAgent → AnalysisAgent → VisualizationAgent → DecisionAgent
+    Before (blocking):
+        POST /api/analyze/ → wait 30-40s → response
 
-    Returns a unified response with plan, SQL, data, insight, chart type, and recommendation.
+    After (non-blocking):
+        POST /api/analyze/ → {"task_id": "abc123"} ← returns in 0.1s
+        Frontend polls GET /api/task/{task_id} until complete
+
+    Why this is better:
+        - No timeout risk on frontend
+        - FastAPI is free to handle other requests immediately
+        - Celery worker handles the heavy LLM work separately
     """
-    print("Hello, Inside analyze router....")
-    agent = OrchestratorAgent()
-    result = await agent.run(request.question)
-    return result
+    task = analyze_question_task.delay(request.question)
+    return {"task_id": task.id}
