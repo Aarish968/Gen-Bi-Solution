@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import { useChat } from '../hooks/useChat'
+import type { ChatMessage } from '../hooks/useChat'
 import ChatInput from '../components/ChatInput'
 import MessageBubble from '../components/MessageBubble'
 
@@ -10,8 +10,28 @@ const SUGGESTIONS = [
   'Compare North and South region sales',
 ]
 
-export default function ChatPage() {
-  const { messages, isLoading, ragChunks, sendMessage, uploadFile, clearChat } = useChat()
+interface Props {
+  messages: ChatMessage[]
+  isLoading: boolean
+  ragReady: boolean
+  ragChunks: number
+  sendMessage: (question: string) => Promise<void>
+  uploadFile: (file: File) => Promise<void>
+  clearChat: () => void
+}
+
+/**
+ * ChatPage receives all state as props from App.tsx
+ * so messages persist when switching between tabs.
+ */
+export default function ChatPage({
+  messages,
+  isLoading,
+  ragChunks,
+  sendMessage,
+  uploadFile,
+  clearChat,
+}: Props) {
   const bottomRef = useRef<HTMLDivElement>(null)
 
   // Auto-scroll to latest message
@@ -53,7 +73,6 @@ export default function ChatPage() {
       {/* ── Messages ── */}
       <div className="flex-1 overflow-y-auto px-4 py-4 space-y-5">
         {messages.length === 0 ? (
-          /* Empty state — show suggestions */
           <div className="flex flex-col items-center justify-center h-full gap-6 text-center">
             <div>
               <p className="text-4xl mb-3">✦</p>

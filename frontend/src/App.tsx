@@ -1,8 +1,17 @@
 import { BrowserRouter, Routes, Route, NavLink } from 'react-router-dom'
 import ChatPage from './pages/ChatPage'
 import ForecastPage from './pages/ForecastPage'
+import { useChat } from './hooks/useChat'
 
+/**
+ * useChat is lifted here so messages survive tab switches.
+ *
+ * Before: useChat was inside ChatPage → unmounted on tab switch → messages gone
+ * After:  useChat is in App → App never unmounts → messages persist ✅
+ */
 export default function App() {
+  const chat = useChat()
+
   return (
     <BrowserRouter>
       <div className="min-h-screen bg-slate-900 text-slate-100 flex flex-col">
@@ -44,7 +53,7 @@ export default function App() {
         {/* ── Page Content ── */}
         <main className="flex-1 overflow-hidden">
           <Routes>
-            <Route path="/" element={<ChatPage />} />
+            <Route path="/" element={<ChatPage {...chat} />} />
             <Route path="/forecast" element={<ForecastPage />} />
           </Routes>
         </main>
