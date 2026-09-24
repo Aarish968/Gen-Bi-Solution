@@ -1,8 +1,8 @@
 from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
-    GOOGLE_API_KEY: str
-    GEMINI_MODEL: str = "gemini-3.5-flash"
+    GROQ_API_KEY: str
+    GROQ_MODEL: str = "openai/gpt-oss-20b"
 
     # Redis
     REDIS_URL: str = "redis://localhost:6379/0"
